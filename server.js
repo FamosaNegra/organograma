@@ -1,8 +1,7 @@
 const express = require('express');
-const {
-    Pool
-} = require('pg');
+const { Pool } = require('pg');
 const path = require('path');
+const cors = require('cors');  // Adicione esta linha
 
 const app = express();
 const port = 3080;
@@ -15,6 +14,8 @@ const pool = new Pool({
     password: '@Ph974985101',
     port: 5432,
 });
+
+app.use(cors());  // Adicione esta linha para permitir CORS
 
 // Servir arquivos estáticos a partir do diretório 'public'
 app.use(express.static(path.join(__dirname, 'public')));
