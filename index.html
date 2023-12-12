@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Organograma a partir do Banco de Dados</title>
+    <!-- Adicione o link para a biblioteca OrgChart.js -->
+    <script src="https://balkan.app/js/OrgChart.js"></script>
+
+    <style>
+      body {
+        width: 100vw;
+        height: 100vh;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        font-family: Helvetica;
+        background: #1e1e1e !important;
+      }
+      #tree {
+        width: 100%;
+        height: 100%;
+      }
+      .boc-light .boc-edit-form {
+        background-color: #000;
+      }
+      [data-n-id] rect {
+        fill: #ec1c24;
+      }
+      [data-n-id] rect:hover {
+       filter: drop-shadow( 4px 0px 15px #f23037);
+       transition: ease-in-out 0.3s;
+    }
+
+      [data-n-id] circle {
+        fill: #ec1c24;
+      }
+      .node.red rect {
+        fill: #ec1c24;
+      }
+      .boc-edit-form-header{
+        background: #ec1c24!important;
+      }
+      .boc-edit-form{
+        background: #1e1e1e!important;
+      }
+      .boc-light .boc-input>input, .boc-light .boc-input>select{
+        color: white!important;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Div para renderizar o gráfico de árvore -->
+    <div id="tree" class="boc-dark"></div>
+
+    <script>
+      // Conexão com o banco de dados
+      const dbConfig = {
+        user: "postgres",
+        host: "db.mxdyiwlpvxbfoyxbvoxd.supabase.co",
+        database: "postgres",
+        password: "@Ph974985101",
+        port: 5432,
+      };
+
+      // Função para obter dados da tabela Organograma
+      async function fetchOrganogramaData() {
+        try {
+          const response = await fetch("/api/obterDadosOrganograma", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dbConfig),
+          });
+
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.error("Erro ao obter dados do organograma:", error);
+        }
+      }
+
+      // Função para criar o organograma com os dados obtidos do banco de dados
+      async function createOrganograma() {
+        const organogramaData = await fetchOrganogramaData();
+
+        if (organogramaData) {
+          let chart = new OrgChart(document.getElementById("tree"), {
+            mouseScroll: OrgChart.action.none,
+            nodeBinding: {
+              field_0: "name",
+              field_1: "cargo",
+            },
+            enableDragDrop: true,
+            nodes: organogramaData,
+          });
+        }
+      }
+
+      // Chama a função para criar o organograma
+      createOrganograma();
+    </script>
+  </body>
+</html>
